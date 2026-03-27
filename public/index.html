@@ -1,193 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Strongman AI | Sentiment Analysis</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    #output { margin-top: 20px; font-size: 1.2em; color: #333; }
-    button { padding: 10px 15px; font-size: 1em; margin-top: 10px; }
-    .radio-group { margin-top: 20px; }
-    #result { margin-top: 15px; font-weight: bold; color: #007700; }
-  </style>
+<meta charset="UTF-8">
+<title>Random Exercise Picker</title>
+
+<style>
+body{ font-family:Arial; padding:20px; background:black; color:white; }
+#output{ font-size:1.5em; margin-top:20px; }
+button{ padding:10px 15px; margin-top:10px; background:#333; color:white; border:none; cursor:pointer; }
+#result{ margin-top:15px; color:#de673d; font-weight:bold; }
+</style>
+
 </head>
 <body>
-  <h1>Random Exercise Picker</h1>
-  <button onclick="showRandomLine()">Get Random Exercise</button>
-  <div id="output"></div>
 
-  <div class="radio-group">
-    <input type="radio" id="canDo" name="answer" value="I can do it">
-    <label for="canDo">I can do it</label><br>
-    <input type="radio" id="cantDo" name="answer" value="I can't do it">
-    <label for="cantDo">I can't do it</label><br>
-    <button onclick="submitAnswer()">Submit</button>
-  </div>
+<h1>Random Exercise Picker</h1>
 
-  <div id="result"></div>
+<div id="output"></div>
 
-  <script>
-    // Abbreviated exercise list for demonstration
-    const linesString = 
-`30 pushups.
+<div>
+<input type="radio" name="answer" value="I can do it"> I can do it<br>
+<input type="radio" name="answer" value="I can't do it"> I can't do it<br>
+
+<button onclick="submitAnswer()">Submit</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+const lines = `
+30 pushups.
 50 situps.
 20 pull-ups.
 15 dips.
-100 bodyweight squats.
-50 lunges holding 20 lb dumbbells.
+100 squats.
+50 lunges with 20 lb dumbbells.
 20 burpees.
+Plank 1 min.
+Side plank 30 sec each side.
 30 jumping jacks.
-Plank for 1 minute.
-Side plank 30 seconds per side.
 20 mountain climbers.
-30 glute bridges.
-50 calf raises holding 10 lb dumbbells.
-20 hand-release pushups.
+50 calf raises with 10 lb dumbbells.
 15 pike pushups.
 30 bicycle crunches.
-20 Russian twists holding a 10 lb plate.
+20 Russian twists with 10 lb plate.
 10 chin-ups.
 50 leg raises.
-20 tricep extensions with 25 lb dumbbell.
 30 bicep curls with 25 lb dumbbells.
-20 kettlebell swings with 35 lb kettlebell.
-15 overhead press with 40 lb dumbbells.
-10 push press with 60 lb barbell.
-20 goblet squats with 50 lb kettlebell.
-15 front squats with 95 lb barbell.
-30 sumo squats with 40 lb dumbbell.
-20 Romanian deadlifts with 135 lb barbell.
-15 deadlifts with 185 lb barbell.
-10 bench press reps with 135 lb barbell.
-10 incline bench press reps with 95 lb dumbbells.
-15 dumbbell chest flys with 25 lb dumbbells.
-20 bent-over rows with 50 lb dumbbells.
-15 seated rows with 100 lb weight stack.
-10 pullovers with 25 lb dumbbell.
-20 lateral raises with 10 lb dumbbells.
-15 front raises with 10 lb dumbbells.
-20 shrugs with 50 lb dumbbells.
-15 hammer curls with 25 lb dumbbells.
-30 reverse lunges holding 20 lb dumbbells.
-20 step-ups per leg holding 15 lb dumbbells.
-30 hip thrusts with 50 lb barbell.
-15 Bulgarian split squats per leg holding 25 lb dumbbells.
-20 cable tricep pushdowns with 50 lb weight.
-15 face pulls with 40 lb cable.
-30 scapular pull-ups.
-15 incline dumbbell curls with 20 lb dumbbells.
-20 single-leg deadlifts with 25 lb dumbbells.
-30 wall sits holding 20 lb plate.
-20 hanging knee raises.
-50 pull-ups.
-10 one-arm pushups per arm.
-15 handstand pushups.
-20 deadlifts with 225 lb barbell.
-30 squats with 135 lb barbell.
-50 kettlebell swings with 50 lb kettlebell.
-30 bench press reps with 185 lb barbell.
-20 weighted lunges with 50 lb barbell.
-25 overhead presses with 60 lb barbell.
-40 pushups with claps.
-60 situps holding 10 lb plate.
-25 pull-ups with 10 lb weight belt.
-30 dips holding 15 lb dumbbells.
-120 bodyweight squats.
-40 lunges holding 25 lb dumbbells.
-25 burpees.
-50 jumping jacks.
-Plank for 2 minutes.
-Side plank 1 minute per side.
-40 mountain climbers.
-50 glute bridges.
-60 calf raises holding 20 lb dumbbells.
-30 hand-release pushups.
-25 pike pushups.
-50 bicycle crunches.
-35 Russian twists holding 15 lb plate.
-15 chin-ups.
-50 leg raises.
-30 tricep extensions with 25 lb dumbbell.
-40 bicep curls with 25 lb dumbbells.
-35 kettlebell swings with 40 lb kettlebell.
-25 overhead press with 40 lb dumbbells.
-15 push press with 70 lb barbell.
-35 goblet squats with 55 lb kettlebell.
-25 front squats with 105 lb barbell.
-40 sumo squats with 50 lb dumbbell.
-30 Romanian deadlifts with 125 lb barbell.
-20 deadlifts with 185 lb barbell.
-15 bench press reps with 145 lb barbell.
-15 incline bench press reps with 95 lb dumbbells.
-20 dumbbell chest flys with 25 lb dumbbells.
-30 bent-over rows with 55 lb dumbbells.
-20 seated rows with 110 lb weight stack.
-15 pullovers with 25 lb dumbbell.
-30 lateral raises with 12 lb dumbbells.
-25 front raises with 12 lb dumbbells.
-35 shrugs with 55 lb dumbbells.
-20 hammer curls with 30 lb dumbbells.
-40 reverse lunges holding 20 lb dumbbells.
-30 step-ups per leg holding 15 lb dumbbells.
-35 hip thrusts with 55 lb barbell.
-25 Bulgarian split squats per leg holding 30 lb dumbbells.
-30 cable tricep pushdowns with 55 lb weight.
-20 face pulls with 40 lb cable.
-40 scapular pull-ups.
-20 incline dumbbell curls with 25 lb dumbbells.
-25 single-leg deadlifts with 30 lb dumbbells.
-35 wall sits holding 25 lb plate.
-25 hanging knee raises.
-60 pull-ups.
-15 one-arm pushups per arm.
-25 handstand pushups.
-30 deadlifts with 275 lb barbell.
-40 squats with 185 lb barbell.
-60 kettlebell swings with 60 lb kettlebell.
-40 bench press reps with 205 lb barbell.
-25 weighted lunges with 60 lb barbell.
-30 overhead presses with 70 lb barbell.
+20 kettlebell swings 35 lb.
+15 overhead press 40 lb dumbbells.
+20 goblet squats 50 lb kettlebell.
+15 front squats 95 lb barbell.
+30 sumo squats 40 lb dumbbell.
+20 Romanian deadlifts 135 lb barbell.
+15 deadlifts 185 lb barbell.
+10 bench press 135 lb barbell.
+30 hip thrusts 50 lb barbell.
+25 overhead presses 60 lb barbell.
 `;
 
-    const linesArray = linesString.split('\n').filter(line => line.trim() !== '');
+const exercises = lines.split("\n").filter(x=>x.trim()!="");
+let currentExercise = "";
 
-    function showRandomLine() {
-      const randomIndex = Math.floor(Math.random() * linesArray.length);
-      document.getElementById('output').textContent = linesArray[randomIndex];
-      document.getElementById('result').textContent = '';
-      const radios = document.getElementsByName('answer');
-      radios.forEach(r => r.checked = false);
+// Pick one random exercise on page load
+function generateExercise(){
+    const i = Math.floor(Math.random()*exercises.length);
+    currentExercise = exercises[i];
+    document.getElementById("output").textContent = currentExercise;
+}
+
+generateExercise();
+
+function submitAnswer(){
+    const radios = document.getElementsByName("answer");
+    let selected = null;
+    for(const r of radios){ if(r.checked) selected = r.value; }
+
+    if(!selected){
+        document.getElementById("result").textContent = "Select an option.";
+        return;
     }
 
-    function submitAnswer() {
-      const radios = document.getElementsByName('answer');
-      let selectedValue = null;
-      for (const radio of radios) {
-        if (radio.checked) selectedValue = radio.value;
-      }
-
-      const exercise = document.getElementById('output').textContent;
-
-      if (selectedValue && exercise) {
-        // Send data to backend
-        fetch('/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ exercise, answer: selectedValue })
+    fetch("/save",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+            exercise: currentExercise,
+            answer: selected
         })
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('result').textContent = 'Response saved!';
-          radios.forEach(r => r.checked = false);
-        })
-        .catch(err => {
-          document.getElementById('result').textContent = 'Error saving response.';
-          console.error(err);
-        });
-      } else {
-        document.getElementById('result').textContent = 'Please select an option.';
-      }
-    }
-  </script>
+    })
+    .then(res=>res.text())
+    .then(()=>{
+        document.getElementById("result").textContent = "Saved to server CSV.";
+    });
+}
+</script>
+
 </body>
 </html>
