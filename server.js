@@ -1,43 +1,52 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const app = express();
-
-// Render sets PORT automatically
 const PORT = process.env.PORT || 3000;
 
+// Serve static files (HTML, JS, CSS)
+app.use(express.static('public'));
+
+// Middleware to parse JSON requests from frontend
 app.use(express.json());
-app.use(express.static(__dirname + "/public"));
+app.use(express.urlencoded({ extended: true }));
 
-const csvFile = "results.csv";
+// Path to results CSV
+const csvFilePath = path.join(__dirname, 'results.csv');
 
-// Create CSV if missing
-if (!fs.existsSync(csvFile)) {
-    fs.writeFileSync(csvFile, "Exercise,Answer\n");
+// Ensure CSV file exists
+if (!fs.existsSync(csvFilePath)) {
+  fs.writeFileSync(csvFilePath, 'Exercise,Answer\n', 'utf8');
 }
 
-// Save POST submissions
-app.post("/save", (req, res) => {
-    const { exercise, answer } = req.body;
+// Endpoint to receive form submissions
+app.post('/submit', (req, res) => {
+  const { exercise, answer } = req.body;
 
-    // Map answers
-    let mappedAnswer = "";
-    if (answer === "I can do it") mappedAnswer = "possible";
-    else if (answer === "I can't do it") mappedAnswer = "impossible";
-    else mappedAnswer = answer;
+  if (!exercise || !answer) {
+    return res.status(400).send('Missing exercise or answer.');
+  }
 
-    const row = `"${exercise}","${mappedAnswer}"\n`;
+  // Convert answer to Possible / Impossible
+  const formattedAnswer = answer === "I can do it" ? "Possible" : "Impossible";
 
-    fs.appendFile(csvFile, row, err => {
-        if (err) {
-            res.status(500).send("Error saving result");
-        } else {
-            res.send("Saved");
-        }
-    });
+  // Append to CSV
+  const line = `"${exercise}","${formattedAnswer}"\n`;
+  fs.appendFile(csvFilePath, line, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Failed to save.');
+    }
+    res.send('Saved successfully!');
+  });
 });
 
+// Endpoint to download CSV
+app.get('/download', (req, res) => {
+  res.download(csvFilePath);
+});
+
+// Start server
 app.listen(PORT, () => {
-    console.log("Server running on port " + PORT);
+  console.log(`Server running on port ${PORT}`);
 });
