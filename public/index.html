@@ -72,7 +72,6 @@ button:hover{
 
 <script>
 
-// PASTE YOUR FULL EXERCISE LIST HERE
 const exercisesText = `
 30 pushups.
 50 situps.
@@ -204,7 +203,7 @@ Side plank 1 minute per side.
 20 wrist circles
 10 dead bugs
 15 heel taps
-20 standing side bends
+10 standing side bends
 20 standing twists
 10 slow crunches
 15 pelvic tilts
@@ -240,9 +239,9 @@ Side plank 1 minute per side.
 20 marching steps
 20 small jumping jacks
 15 slow high knees
-20 step jacks
+10 step jacks
 15 butt kicks
-30 seconds light jogging in place
+10 seconds light jogging in place
 20 slow mountain climbers
 20 standing calf stretches
 20 side lunges
@@ -256,14 +255,14 @@ Side plank 1 minute per side.
 20 arm reach stretches
 20 shoulder shrugs
 20 standing toe taps
-15 easy reverse lunges
+10 easy reverse lunges
 20 seated marches
 20 light step backs
 15 slow squat pulses
 20 standing hamstring stretches
 20 ankle flexes
 20 shoulder circles
-20 gentle torso twists
+10 gentle torso twists
 15 standing quad stretches
 20 light knee bends
 20 slow heel-to-toe rocks
@@ -277,6 +276,27 @@ Side plank 1 minute per side.
 20 standing reach ups
 20 light torso bends
 20 relaxed arm shakes
+10 pushups.
+10 situps.
+10 pull-ups.
+15 dips.
+20 bodyweight squats.
+20 lunges holding 20 lb dumbbells.
+150 burpees.
+30 jumping jacks.
+Plank for 1 minute.
+Side plank 30 seconds per side.
+20 mountain climbers.
+30 glute bridges.
+50 calf raises holding 10 lb dumbbells.
+10 hand-release pushups.
+15 pike pushups.
+30 bicycle crunches.
+20 Russian twists holding a 10 lb plate.
+10 chin-ups.
+50 leg raises.
+10 tricep extensions with 25 lb dumbbell.
+10 bicep curls with 25 lb dumbbells.
 20 light calf pulses
 15 gentle knee bends
 20 slow march steps
@@ -290,7 +310,7 @@ const exercises = exercisesText.split("\n").filter(x => x.trim() !== "");
 let currentExercise = "";
 
 // Generate one random exercise
-function generateExercise(){
+ generateExercise(){
   const i = Math.floor(Math.random() * exercises.length);
   currentExercise = exercises[i];
   document.getElementById("exercise").textContent = currentExercise;
@@ -298,30 +318,36 @@ function generateExercise(){
 
 generateExercise();
 
-// Submit answer
 function submitAnswer(answer){
 
-  fetch("/submit",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
+  fetch("/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       exercise: currentExercise,
       answer: answer
     })
   })
   .then(res => res.text())
   .then(() => {
-      document.getElementById("log").textContent = "Saved to server CSV!";
-      document.getElementById("can").disabled = true;
-      document.getElementById("cant").disabled = true;
+
+    document.getElementById("log").textContent = "Saved ✓";
+
+    setTimeout(() => {
+
+      generateExercise();// new random exercise
+      document.getElementById("log").textContent = "";
+
+    }, 800);
+
   })
   .catch(()=>{
-      document.getElementById("log").textContent = "Error saving response.";
+    document.getElementById("log").textContent = "Error saving response.";
   });
 
-}
+}  
 
-// Button listeners
+//button listeners
 document.getElementById("can").addEventListener("click", () => submitAnswer("I can do it"));
 document.getElementById("cant").addEventListener("click", () => submitAnswer("I can't do it"));
 
