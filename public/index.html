@@ -92,7 +92,7 @@ generateExercise();
 // Submit answer
 function submitAnswer(answer){
 
-  fetch("/save",{
+  fetch("/submit",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
